@@ -2,7 +2,6 @@
 
 #include <Windows.h>
 #include <iostream>
-#include <thread>
 #include <conio.h>
 
 typedef enum {
@@ -20,6 +19,8 @@ typedef enum {
 }MathMethod;
 
 class Calculator {
+	
+
 private:
 	double m_ResultNum;
 	double m_Num1;
@@ -29,11 +30,8 @@ private:
 
 	CalculatorState m_State;
 	MathMethod m_Method;
+	
 protected:
-	std::thread* m_ThreadCalculate;
-
-	void CalculateLoop();
-
 	void ReturnToNum1();
 	void Return();
 	void AddNewNum(int);
@@ -45,14 +43,14 @@ protected:
 public:
 	Calculator();
 
-	void StartCalculator();
-
 	double GetNum1();
 	double GetNum2();
 	double GetResultNum();
 
 	void SetUpdate(bool);
 	bool GetUpdate();
+
+	void KeyPressCB(int);
 
 	CalculatorState GetCalculatorState();
 	MathMethod GetMathMethod();

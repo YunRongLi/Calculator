@@ -11,135 +11,6 @@ Calculator::Calculator() {
 	m_Update = true;
 }
 
-void Calculator::StartCalculator() {
-	m_ThreadCalculate = new std::thread(&Calculator::CalculateLoop, this);
-}
-
-void Calculator::CalculateLoop() {
-	int key_now, key_before = 0;
-
-	while (1) {
-		key_now = _getch();
-
-		if (key_now != key_before) {
-			if (m_State == FirstNumber) {
-				if (key_now > 47 && key_now < 58) {
-					AddNewNum(key_now);
-					m_Update = true;
-				}
-				else {
-					switch (key_now)
-					{
-					case 8:// BackSpace Key Press
-						RemoveNum();
-						m_Update = true;
-						break;
-					case 13:// Enter(Return) Key Press
-						Return();
-						m_Update = true;
-						break;
-					case 27:// Esc Key Press
-						ClearAll();
-						m_Update = true;
-						break;
-					case 42:// * Key Press
-						m_Method = Multiplication;
-						m_State = SecondNumber;
-						m_Update = true;
-						break;
-					case 43:// + Key Press
-						m_Method = Addition;
-						m_State = SecondNumber;
-						m_Update = true;
-						break;
-					case 45:// - Key Press
-						m_Method = Subtraction;
-						m_State = SecondNumber;
-						m_Update = true;
-						break;
-					case 47:// / Key Press
-						m_Method = Division;
-						m_State = SecondNumber;
-						m_Update = true;
-						break;
-					case 224:// Delete Key Press
-						ClearNum();
-						m_Update = true;
-						break;
-					default:
-						break;
-					}
-				}
-			}
-			else if (m_State == SecondNumber) {
-				if (key_now > 47 && key_now < 58) {
-					AddNewNum(key_now);
-					m_Update = true;
-				}
-				else {
-					switch (key_now)
-					{
-					case 8:// BackSpace Key Press
-						RemoveNum();
-						m_Update = true;
-						break;
-					case 13:// Enter(Return) Key Press
-						Return();
-						m_Update = true;
-						break;
-					case 27:// Esc Key Press
-						ClearAll();
-						m_Update = true;
-						break;
-					case 42:// * Key Press
-						m_Method = Multiplication;
-						ReturnToNum1();
-						m_Update = true;
-						break;
-					case 43:// + Key Press
-						m_Method = Addition;
-						ReturnToNum1();
-						m_Update = true;
-						break;
-					case 45:// - Key Press
-						m_Method = Subtraction;
-						ReturnToNum1();
-						m_Update = true;
-						break;
-					case 47:// / Key Press
-						m_Method = Division;
-						ReturnToNum1();
-						m_Update = true;
-						break;
-					case 224:
-						ClearNum();
-						m_Update = true;
-						break;
-					default:
-						break;
-					}
-				}
-			}
-			else if (m_State == Done) {
-				if (key_now > 47 && key_now < 58) {
-					m_State = FirstNumber;
-					AddNewNum(key_now);
-					m_Update = true;
-				}
-			}
-
-			if (key_now == 115) {
-				system("cls");
-				std::cout << "Num 1: " << GetNum1() << std::endl;
-				std::cout << "Num 2: " << GetNum2() << std::endl;
-				std::cout << "Num  : " << GetResultNum() << std::endl;
-			}
-
-			key_before = key_now;
-		}
-	}
-}
-
 void Calculator::Return() {
 	if (m_Method == Addition) {
 		m_ResultNum = m_Num1 + m_Num2;
@@ -229,7 +100,7 @@ void Calculator::RemoveNum() {
 	if (m_Method == FirstNumber) {
 		num = m_Num1;
 
-		if (num < 10 && num >0) {
+		if (num < 10 && num > 0) {
 			m_Num1 = m_Num1 - num;
 		}
 		else {
@@ -294,4 +165,101 @@ CalculatorState Calculator::GetCalculatorState() {
 
 MathMethod Calculator::GetMathMethod() {
 	return m_Method;
+}
+
+void Calculator::KeyPressCB(int key) {
+	if (m_State == FirstNumber) {
+		if (key > 47 && key < 58) {
+			AddNewNum(key);
+		}
+		else {
+			switch (key)
+			{
+			case 8:// BackSpace Key Press
+				RemoveNum();
+				break;
+			case 13:// Enter(Return) Key Press
+				Return();
+				break;
+			case 27:// Esc Key Press
+				ClearAll();
+				break;
+			case 42:// * Key Press
+				m_Method = Multiplication;
+				m_State = SecondNumber;
+				break;
+			case 43:// + Key Press
+				m_Method = Addition;
+				m_State = SecondNumber;
+				break;
+			case 45:// - Key Press
+				m_Method = Subtraction;
+				m_State = SecondNumber;
+				break;
+			case 47:// / Key Press
+				m_Method = Division;
+				m_State = SecondNumber;
+				break;
+			case 224:// Delete Key Press
+				ClearNum();
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	else if (m_State == SecondNumber) {
+		if (key > 47 && key < 58) {
+			AddNewNum(key);
+		}
+		else {
+			switch (key)
+			{
+			case 8:// BackSpace Key Press
+				RemoveNum();
+				break;
+			case 13:// Enter(Return) Key Press
+				Return();
+				break;
+			case 27:// Esc Key Press
+				ClearAll();
+				break;
+			case 42:// * Key Press
+				m_Method = Multiplication;
+				ReturnToNum1();
+				break;
+			case 43:// + Key Press
+				m_Method = Addition;
+				ReturnToNum1();
+				break;
+			case 45:// - Key Press
+				m_Method = Subtraction;
+				ReturnToNum1();
+				break;
+			case 47:// / Key Press
+				m_Method = Division;
+				ReturnToNum1();
+				break;
+			case 224:
+				ClearNum();
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	else if (m_State == Done) {
+		if (key > 47 && key < 58) {
+			m_State = FirstNumber;
+			AddNewNum(key);
+		}
+		switch (key)
+		{
+		case 27:// Esc Key Press
+			ClearAll();
+			break;
+		default:
+			break;
+		}
+	}
 }
